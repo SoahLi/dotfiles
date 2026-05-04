@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Reinstall official packages
+sudo pacman -S --needed - < "$HOME/dotfiles/bootstrap/pkglist_official.txt"
+
+yay -S --needed - < "$HOME/dotfiles/bootstrap/pkglist_aur.txt"
