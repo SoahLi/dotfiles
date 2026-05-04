@@ -2,6 +2,7 @@ $wp = <wp>
 preload = $wp
 wallpaper = eDP-1, $wp
 wallpaper = HDMI-A-2, $wp
+wallpaper = HDMI-A-3, $wp
 $wp = <wp>
 wallpaper {
   monitor = eDP-1
@@ -11,6 +12,12 @@ wallpaper {
 }
 wallpaper {
   monitor = HDMI-A-2
+  path = $wp
+  fit_mode = cover
+
+}
+wallpaper {
+  monitor = HDMI-A-3
   path = $wp
   fit_mode = cover
 
