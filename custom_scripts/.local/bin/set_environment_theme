@@ -18,7 +18,7 @@ else
 fi
 
 # Replace the placeholder in template and save to .conf file
-sed -e "s~<wp>~${random_pick}~g" /home/owen/.config/templates/hyprpaper.template > /home/owen/.config/hypr/hyprpaper.conf
+sed -e "s~<wp>~${random_pick}~g" /home/owen/.config/templates_for_env_setup/hyprpaper.template > /home/owen/.config/hypr/hyprpaper.conf
 
 
 # Kill any running hyprpaper processes
