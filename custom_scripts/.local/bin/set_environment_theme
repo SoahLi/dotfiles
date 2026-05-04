@@ -65,5 +65,6 @@ general {
 }
 EOF
 
-hyprctl reload > /dev/null 2>&1
+#hyprctl reload > /dev/null 2>&1
+setsid hyprctl reload > /dev/null 2>&1
  
