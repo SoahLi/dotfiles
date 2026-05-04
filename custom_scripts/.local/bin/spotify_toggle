@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+
+launch_spotify() {
+  if ! pgrep -x "spotify" > /dev/null; then
+      echo "hello there"
+      nohup /home/owen/.local/share/spotify-launcher/install/usr/share/spotify/spotify >/dev/null 2>&1 &
+      sleep 1 
+      # Check if process actually started
+      if pgrep -x "spotify" > /dev/null; then
+          return 0  # Successfully launched
+      else
+          return 1  # Failed to launch
+      fi
+  else
+      return 1  # Already running
+  fi
+}
+
+get_win_address() {
+  WIN_ADDRESS=$(hyprctl clients -j | jq -r '.[] | select(.class == "Spotify") | .address' | head -n1)
+  echo "$WIN_ADDRESS"
+}
+
+focus_and_float() {
+  local WIN_ADDRESS="$1"
+  local SPOTIFY_LAUNCHED="$2"
+
+  # Focus the window
+  #hyprctl dispatch focuswindow "address:$WIN_ADDRESS"
+
+  # Make it floating
+  IS_FLOATING=$(hyprctl clients -j | jq -r ".[] | select(.address == \"$WIN_ADDRESS\") | .floating")
+  if [[ "$IS_FLOATING" == "false" ]]; then
+      hyprctl dispatch togglefloating "address:$WIN_ADDRESS"
+      hyprctl dispatch resizewindowpixel "address:$WIN_ADDRESS 700 400"
+      hyprctl dispatch movewindowpixel "address:$WIN_ADDRESS 100 100"
+  fi
+
+  # Get current workspace (from focused monitor)
+  CURRENT_WORKSPACE=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .activeWorkspace.id')
+
+  # Get window's workspace
+  WIN_WORKSPACE=$(hyprctl clients -j | jq -r ".[] | select(.address == \"$WIN_ADDRESS\") | .workspace.id")
+
+  # If window is on current workspace, move it to workspace 4
+  echo "Spotify launched: $SPOTIFY_LAUNCHED"
+  if [[ "$SPOTIFY_LAUNCHED" -ne 0 ]]; then 
+    if [[ "$WIN_WORKSPACE" -eq "$CURRENT_WORKSPACE" ]]; then
+        hyprctl dispatch movetoworkspacesilent "4,address:$WIN_ADDRESS"
+    else # If window is on a different workspace, move it to current workspace
+        echo "hello"
+        hyprctl dispatch movetoworkspace "$CURRENT_WORKSPACE,address:$WIN_ADDRESS"
+    fi
+  fi 
+  
+}
+
+
+move_window_top_right() {
+    local WIN_ADDRESS="$1"   # ✅ fixed
+
+    MONITOR_JSON=$(hyprctl monitors -j | jq '.[] | select(.focused == true)')
+    MONITOR_X=$(echo "$MONITOR_JSON" | jq '.x')
+    MONITOR_Y=$(echo "$MONITOR_JSON" | jq '.y')
+    MONITOR_WIDTH=$(echo "$MONITOR_JSON" | jq '.width')
+    MONITOR_HEIGHT=$(echo "$MONITOR_JSON" | jq '.height')
+
+    WIN_JSON=$(hyprctl clients -j | jq ".[] | select(.address == \"$WIN_ADDRESS\")")
+    WIN_WIDTH=$(echo "$WIN_JSON" | jq '.size[0]')
+    WIN_HEIGHT=$(echo "$WIN_JSON" | jq '.size[1]')
+
+    NEW_X=$((MONITOR_X + MONITOR_WIDTH - WIN_WIDTH))
+    NEW_Y=$MONITOR_Y
+
+    hyprctl dispatch movewindowpixel "exact $NEW_X $NEW_Y,address:$WIN_ADDRESS"
+}
+
+move_window_center() {
+    local WIN_ADDRESS="$1"
+
+    MONITOR_JSON=$(hyprctl monitors -j | jq '.[] | select(.focused == true)')
+    MONITOR_X=$(echo "$MONITOR_JSON" | jq '.x')
+    MONITOR_Y=$(echo "$MONITOR_JSON" | jq '.y')
+    MONITOR_WIDTH=$(echo "$MONITOR_JSON" | jq '.width')
+    MONITOR_HEIGHT=$(echo "$MONITOR_JSON" | jq '.height')
+
+    WIN_JSON=$(hyprctl clients -j | jq ".[] | select(.address == \"$WIN_ADDRESS\")")
+    WIN_WIDTH=$(echo "$WIN_JSON" | jq '.size[0]')
+    WIN_HEIGHT=$(echo "$WIN_JSON" | jq '.size[1]')
+
+    # Calculate center position
+    NEW_X=$((MONITOR_X + (MONITOR_WIDTH - WIN_WIDTH) / 2))
+    NEW_Y=$((MONITOR_Y + (MONITOR_HEIGHT - WIN_HEIGHT) / 2))
+
+    hyprctl dispatch movewindowpixel "exact $NEW_X $NEW_Y,address:$WIN_ADDRESS"
+}
+
+
+
+
+#main
+launch_spotify
+SPOTIFY_LAUNCHED=$?
+echo "Spotify launched: $SPOTIFY_LAUNCHED"
+WIN_ADDRESS=$(get_win_address)
+echo "Spotify window address: $WIN_ADDRESS"
+
+if [[ -z "$WIN_ADDRESS" ]]; then
+  echo "Could not find the Spotify window address after launching. Exiting."
+  exit 1   # ✅ added
+fi
+
+focus_and_float "$WIN_ADDRESS" "$SPOTIFY_LAUNCHED"
+move_window_center "$WIN_ADDRESS"

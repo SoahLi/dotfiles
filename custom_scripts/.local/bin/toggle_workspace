@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Configuration: where to store the previous workspace ID
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}"
+STORAGE_FILE="${CACHE_DIR}/hypr_prev_workspace"
+
+# Ensure the cache directory exists
+mkdir -p "$CACHE_DIR"
+
+# Get the currently focused workspace ID
+current_workspace=$(hyprctl monitors -j | jq '.[] | select(.focused == true) | .activeWorkspace.id')
+
+if [[ "$current_workspace" -ne 9 ]]; then
+    # Not on workspace 0 → save current workspace and switch to 0
+    echo "$current_workspace" > "$STORAGE_FILE"
+    hyprctl dispatch workspace 9 
+else
+    # On workspace 0 → try to go back to the stored workspace
+    if [[ -f "$STORAGE_FILE" ]]; then
+        prev_workspace=$(cat "$STORAGE_FILE")
+        hyprctl dispatch workspace "$prev_workspace"
+    else
+        notify-send "Workspace Toggle" "No workspace defined to return to"
+    fi
+fi

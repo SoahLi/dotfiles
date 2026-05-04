@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+# Pick random wallpaper
+#!/bin/sh
+
+# Use first argument as directory or file, or default to /home/owen/wallpapers
+target="${1:-/home/owen/wallpapers}"
+
+if [ -d "$target" ]; then
+    # If target is a directory, pick a random image file
+    random_pick=$(find "$target" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" \) | shuf -n1)
+elif [ -f "$target" ]; then
+    # If target is a file, use it directly
+    random_pick="$target"
+else
+    echo "Error: $target is not a valid file or directory" >&2
+    exit 1
+fi
+
+# Replace the placeholder in template and save to .conf file
+sed -e "s~<wp>~${random_pick}~g" /home/owen/.config/templates/hyprpaper.template > /home/owen/.config/hypr/hyprpaper.conf
+
+
+# Kill any running hyprpaper processes
+(pkill -x hyprpaper)
+
+# Start hyprpaper in the background
+(hyprpaper &) > /dev/null 2>&1
+
+#run pywal to correctly set cache for chosen wallpaper
+wal -q -i "$random_pick" 
+
+# Get wal cache directory
+WAL_CACHE_DIR="$HOME/.cache/wal"
+COLORS_FILE="$WAL_CACHE_DIR/colors"
+
+# Check if wal colors exist
+if [[ ! -f "$COLORS_FILE" ]]; then
+    echo "rgb(aee4c8) rgb(4F6B9B) 45deg"
+    exit 0
+fi
+
+# Read wal colors from the text file
+# The file format is: one hex color per line (16 lines total)
+COLORS=()
+while IFS= read -r line; do
+    COLORS+=("$line")
+done < "$COLORS_FILE"
+
+# Use color1 and color6 from wal (index 1 and 6 in the array)
+# Note: arrays are 0-indexed, so color1 is at index 1, color6 at index 6
+COLOR1="${COLORS[8]}"  # This is color1 (usually background)
+COLOR2="${COLORS[15]}"  # This is color6 (usually foreground)
+
+# Remove the # prefix if present
+COLOR1="${COLOR1#\#}" COLOR2="${COLOR2#\#}"
+# Convert to rgb() format
+BORDER_COLORS="rgb(${COLOR1}) rgb(${COLOR2}) 45deg"
+
+# Create the config file
+cat > ~/.config/hypr/active_border_color.conf << EOF
+# Dynamically generated colors based on wallpaper
+general {
+    col.active_border = $BORDER_COLORS
+}
+EOF
+
+hyprctl reload > /dev/null 2>&1
+ 

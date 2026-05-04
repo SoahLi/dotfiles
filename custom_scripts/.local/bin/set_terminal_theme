@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+wallpaper_path=$(hyprctl hyprpaper listloaded)
+
+wal -q -i "$wallpaper_path" 
