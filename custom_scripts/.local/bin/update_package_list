@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
-rm  $HOME/dotfiles/boostrap/pkglist_official.txt
-rm  $HOME/dotfiles/boostrap/pkglist_aur.txt
+touch "$HOME/dotfiles/bootstrap/pkglist_official.txt"
+touch "$HOME/dotfiles/bootstrap/pkglist_aur.txt"
+
+# Ensure files exist and overwrite with current package lists
+pacman -Qqen > "$HOME/dotfiles/bootstrap/pkglist_official.txt"
+pacman -Qqem > "$HOME/dotfiles/bootstrap/pkglist_aur.txt"
 
 # Reinstall official packages
-sudo pacman -S --needed - < $HOME/dotfiles/pkglist_official.txt
+sudo pacman -S --needed - < "$HOME/dotfiles/bootstrap/pkglist_official.txt"
 
-yay -S --needed - < $HOME/dotfiles/pkglist_aur.txt
+yay -S --needed - < "$HOME/dotfiles/bootstrap/pkglist_aur.txt"
