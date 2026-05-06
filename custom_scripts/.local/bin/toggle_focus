@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# 1. Get the current window's floating status and workspace ID
+ACTIVE_WINDOW=$(hyprctl activewindow -j)
+CURRENT_FLOATING=$(echo "$ACTIVE_WINDOW" | jq -r '.floating')
+CURRENT_WORKSPACE=$(echo "$ACTIVE_WINDOW" | jq -r '.workspace.id')
+
+# 2. Find the target window address
+# We filter for windows on the same workspace with the OPPOSITE floating status
+TARGET_ADDR=$(hyprctl clients -j | jq -r --arg current_float "$CURRENT_FLOATING" --arg workspace "$CURRENT_WORKSPACE" '
+  .[] 
+  | select(.workspace.id == ($workspace | tonumber)) 
+  | select(.floating != ($current_float == "true")) 
+  | .address' | head -n 1)
+
+# 3. Execute the focus switch if a target was found
+if [ -n "$TARGET_ADDR" ] && [ "$TARGET_ADDR" != "null" ]; then
+    # We use the address: prefix to ensure Hyprland identifies it correctly
+    hyprctl dispatch focuswindow address:"$TARGET_ADDR"
+else
+    echo "No matching window found on this workspace."
+fi
