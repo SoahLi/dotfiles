@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# Dependency: jq
+# This script floats the focused window, resizes it to 75% width,
+# arranges other windows in a 25% column, then tiles them back.
+
+# 1. Get focused window details
+focused=$(hyprctl activewindow -j) || exit 1
+focused_addr=$(jq -r '.address' <<< "$focused")
+focused_ws=$(jq -r '.workspace.id' <<< "$focused")
+focused_pid=$(jq -r '.pid' <<< "$focused") # More stable identifier
+
+# 2. Get monitor dimensions
+# ... (keep your monitor detection code here, it remains the same) ...
+monitors=$(hyprctl monitors -j)
+focused_x=$(jq -r '.at[0]' <<< "$focused")
+monitor=$(jq --argjson x "$focused_x" '.[] | select(.x <= $x and .x + .width > $x)' <<< "$monitors")
+if [[ -z "$monitor" ]]; then
+    monitor=$(jq '.[0]' <<< "$monitors")
+fi
+
+mon_x=$(jq -r '.x' <<< "$monitor")
+mon_y=$(jq -r '.y' <<< "$monitor")
+mon_w=$(jq -r '.width' <<< "$monitor")
+mon_h=$(jq -r '.height' <<< "$monitor")
+
+# 3. Layout calculations
+big_w=$(( mon_w * 75 / 100 ))
+small_w=$(( mon_w - big_w ))
+
+# 4. Get all other windows on the same workspace
+all_clients=$(hyprctl clients -j)
+others=$(jq --arg addr "$focused_addr" '[.[] | select(.workspace.id == $focused_ws and .address != $addr)]' --argjson ws "$focused_ws" <<< "$all_clients")
+small_count=$(jq length <<< "$others")
+
+if [[ $small_count -eq 0 ]]; then
+    # Only one window exists, maybe fullscreen it? Or just exit.
+    exit 0
+fi
+
+small_h=$(( mon_h / small_count ))
+
+# 5. Execute the layout changes using a batch command for atomicity
+#    We float the focused window, move and resize it.
+#    Then we float all other windows, move and resize them.
+#    Finally, we tile them all back. Tiling will make them respect their new sizes/positions.
+
+#hyprctl --batch -f <<EOF
+# 1. Focused window: float, move to left 75% area, resize
+dispatch setfloating address:$focused_addr
+dispatch movewindowpixel exact $mon_x $mon_y,address:$focused_addr
+dispatch resizewindowpixel exact $big_w $mon_h,address:$focused_addr
+
+# 2. Process and layout other windows in the right column
+$(for i in $(seq 0 $((small_count - 1))); do
+    other_addr=$(jq -r ".[$i].address" <<< "$others")
+    y=$(( mon_y + i * small_h ))
+    cat <<INNER
+dispatch setfloating address:$other_addr
+dispatch movewindowpixel exact $(( mon_x + big_w )) $y address:$other_addr
+dispatch resizewindowpixel exact $small_w $small_h address:$other_addr
+INNER
+done)
+
+# 3. Tile all windows back to make the layout permanent
+dispatch tile active
+EOF

@@ -6,6 +6,7 @@
 # Use first argument as directory or file, or default to /home/owen/wallpapers
 target="${1:-/home/owen/wallpapers}"
 
+echo "target $target"
 if [ -d "$target" ]; then
     # If target is a directory, pick a random image file
     random_pick=$(find "$target" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" \) | shuf -n1)
@@ -28,7 +29,7 @@ sed -e "s~<wp>~${random_pick}~g" /home/owen/.config/templates_for_env_setup/hypr
 (hyprpaper &) > /dev/null 2>&1
 
 #run pywal to correctly set cache for chosen wallpaper
-wal -q -i "$random_pick" 
+wal -i "$random_pick" -q
 
 # Get wal cache directory
 WAL_CACHE_DIR="$HOME/.cache/wal"
