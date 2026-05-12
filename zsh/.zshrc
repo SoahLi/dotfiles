@@ -174,5 +174,7 @@ alias wallpapers='/home/owen/wallpapers/'
 #cat ~/.cache/wal/sequences
 #(set_terminal_theme &) 
 
+PAGER=nvimpager
 
 path=($path /home/owen/.config/awww/target/release)
+source /home/owen/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
