@@ -41,19 +41,15 @@ return {
 		},
 	},
 
-	-- Uses config instead of opts, because require is non-static, and will throw error. Come back to this when you understand it better
-	-- Use this option if you want one key escapes. removes vim actions from list
-	--[[
-  config = function()
-    require('telescope').setup({
-      defaults = {
-        mappings = {
-          i = {
-            ["<esc>"] = require("telescope.actions").close,
-          },
-        },
-      },
-    })
-  end,
-  --]]
+	config = function()
+		require('telescope').setup({
+			pickers = {
+				find_files = {
+					hidden = true,      -- Show hidden files
+					follow = true,      -- Follow symlinks
+					-- no_ignore = true, -- Uncomment to also show .gitignore'd files
+				},
+			},
+		})
+	end,
 }
