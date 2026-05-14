@@ -1,0 +1,7 @@
+#belongs in /etc/greetd/config.toml
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --time --theme 'border=red;text=white;prompt=white;time=red;action=white;button=white;container=black;input=white;' --remember --cmd start-hyprland"
+user = "greeter"
