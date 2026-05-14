@@ -1,9 +1,4 @@
 #CUSTOM CONFIG AT THE BOTTOM OF THIS FILE
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
-
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
@@ -81,9 +76,6 @@ source $ZSH/oh-my-zsh.sh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
-# You may need to manually set your language environment
-# (owen): not sure if I need this
-export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -109,9 +101,6 @@ export LANG=en_US.UTF-8
 
 
 # Lines configured by zsh-newuser-install
-HISTFILE=~/.histfile
-HISTSIZE=10000
-SAVEHIST=10000
 setopt notify
 unsetopt beep
 
@@ -174,8 +163,6 @@ alias wallpapers='/home/owen/wallpapers/'
 # Alternative (blocks terminal for 0-3ms)
 #cat ~/.cache/wal/sequences
 #(set_terminal_theme &) 
-
-PAGER=nvimpager
 
 path=($path /home/owen/.config/awww/target/release)
 source /home/owen/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
