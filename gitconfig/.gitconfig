@@ -1,3 +1,9 @@
 [user]
 	email = ows8turnbull@gmail.com
 	name = SoahLi
+[diff]
+  tool = nvimdiff
+[core]
+  editor = nvim -f
+[difftool]
+  prompt = false
