@@ -1,0 +1,12 @@
+#belongs in /etc/
+device_name = "Kinesis Advantage2 Keyboard"
+phys = "usb-0000:02:00.0-2/input1"
+
+
+[[remap]]
+input = ["KEY_PAUSE"]
+output = ["KEY_VOLUMEUP"]
+
+[[remap]]
+input = ["KEY_SYSRQ"]
+output = ["KEY_VOLUMEDOWN"]
