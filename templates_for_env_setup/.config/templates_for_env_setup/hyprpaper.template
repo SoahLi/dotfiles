@@ -3,6 +3,7 @@ preload = $wp
 wallpaper = eDP-1, $wp
 wallpaper = HDMI-A-2, $wp
 wallpaper = HDMI-A-3, $wp
+splash = false
 $wp = <wp>
 wallpaper {
   monitor = eDP-1
