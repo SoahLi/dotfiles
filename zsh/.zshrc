@@ -164,5 +164,28 @@ alias wallpapers='/home/owen/wallpapers/'
 #cat ~/.cache/wal/sequences
 #(set_terminal_theme &) 
 
+# A wrapper function for 'lf' to enable cd on demand with the Enter key
+lf() {
+    # Create a unique temporary file
+    local lf_cd_file=$(mktemp)
+    # Export the file's path so the 'lf' process can see it
+    export LF_CD_FILE="$lf_cd_file"
+
+    # Run the actual lf file manager, passing along any arguments
+    command lf "$@"
+
+    # After lf exits, check if the temp file has a path in it
+    if [[ -s "$LF_CD_FILE" ]]; then
+        # If it does, change to that directory
+        local target_dir=$(cat "$LF_CD_FILE")
+        cd "$target_dir"
+    fi
+
+    # Clean up the temporary file
+    unset LF_CD_FILE
+    rm -f "$lf_cd_file"
+}
+
+
 path=($path /home/owen/.config/awww/target/release)
 source /home/owen/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
