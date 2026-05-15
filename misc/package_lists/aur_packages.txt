@@ -1,0 +1,6 @@
+evremap-git
+evremap-git-debug
+nvimpager
+ttf-ms-fonts
+yay
+yay-debug
