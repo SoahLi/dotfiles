@@ -1,2 +1,8 @@
 set previewer ~/.config/lf/previewer
 set cleaner ~/.config/lf/cleaner
+
+# Custom command to write current path to a file and quit
+cmd cdquit ${{ echo "$PWD" > "$LF_CD_FILE"; }}
+
+# Map the 'Enter' key to run the command and quit
+map <enter> :cdquit; quit
