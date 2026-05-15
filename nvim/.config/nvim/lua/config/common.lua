@@ -256,3 +256,12 @@ vim.api.nvim_create_user_command("LspRestart", function()
 	-- Optional: Notify when done
 	vim.notify("All LSP servers restarted!", vim.log.levels.INFO)
 end, {})
+
+
+-- for kinesis advantage
+vim.keymap.set({ "n", "v", "x" }, "'", ":")
+vim.keymap.set({ "n", "v", "x" }, "\"", ":")
+vim.keymap.set({ "n", "v", "x" }, ";", "'")
+vim.keymap.set({ "n", "v", "x" }, ":", "\"")
+
+
