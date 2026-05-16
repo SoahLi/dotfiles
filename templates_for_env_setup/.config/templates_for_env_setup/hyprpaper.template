@@ -1,9 +1,13 @@
+#Please compile hyprpaper from source at ~/.config/hypr/hyprpaper/
+#the build steps can be found at https://github.com/hyprwm/hyprpaper
+#the default file for splashes is located at ~/.config/hypr/splashes/quotes.txt
+#otherwise, set splash = false to disable hyprland splashes
 $wp = <wp>
 preload = $wp
 wallpaper = eDP-1, $wp
 wallpaper = HDMI-A-2, $wp
 wallpaper = HDMI-A-3, $wp
-splash = false
+#splash = false
 $wp = <wp>
 wallpaper {
   monitor = eDP-1
