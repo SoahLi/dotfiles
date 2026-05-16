@@ -1,0 +1,270 @@
+#include "UI.hpp"
+#include "../defines.hpp"
+#include "../helpers/Logger.hpp"
+#include "../helpers/GlobalState.hpp"
+#include "../ipc/HyprlandSocket.hpp"
+#include <fstream>
+#include <pthread.h>
+#include <string>
+#include <vector>
+#include "../ipc/IPC.hpp"
+#include "../config/WallpaperMatcher.hpp"
+
+#include <algorithm>
+#include <random>
+#include <hyprtoolkit/core/Output.hpp>
+
+#include <hyprutils/string/String.hpp>
+
+static std::string getRandomSplash(const std::string& filePath) {
+    std::ifstream file(filePath);
+    std::vector<std::string> splashes;
+    std::string line;
+    while (std::getline(file, line)) {
+        if (!line.empty())
+            splashes.push_back(line);
+    }
+    if (splashes.empty())
+        return std::string();
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::uniform_int_distribution<> dist(0, splashes.size() - 1);
+    return splashes[dist(g)];
+}
+
+CUI::CUI() = default;
+
+CUI::~CUI() {
+    m_targets.clear();
+}
+
+static std::string_view pruneDesc(const std::string_view& sv) {
+    if (sv.contains('('))
+        return Hyprutils::String::trim(sv.substr(0, sv.find_last_of('(')));
+    return sv;
+}
+
+class CWallpaperTarget::CImagesData {
+  public:
+    CImagesData(Hyprtoolkit::eImageFitMode fitMode, std::vector<std::string> images, const int timeout = 0, std::string order = "default") :
+        fitMode(fitMode), images(std::move(images)), order(std::move(order)), timeout(timeout > 0 ? timeout : 30) {}
+
+    const Hyprtoolkit::eImageFitMode fitMode;
+    std::vector<std::string>         images;
+    const std::string                order;
+    const int                        timeout;
+
+    std::string                      nextImage() {
+        if (order == "random-shuffle" && current + 1 >= images.size()) {
+            std::random_device rd;
+            std::mt19937       g(rd());
+            std::shuffle(images.begin(), images.end(), g);
+            current = 0;
+            return images[current];
+        }
+
+        current = (current + 1) % images.size();
+        return images[current];
+    }
+
+  private:
+    size_t current = 0;
+};
+
+CWallpaperTarget::CWallpaperTarget(SP<Hyprtoolkit::IBackend> backend, SP<Hyprtoolkit::IOutput> output, const std::vector<std::string>& path, Hyprtoolkit::eImageFitMode fitMode,
+                                   const int timeout, const std::string& order) : m_monitorName(output->port()), m_backend(backend) {
+
+
+    static const auto SPLASH_REPLY = getRandomSplash("/home/owen/.config/hypr/splashes/quotes.txt");
+    //static const auto SPLASH_REPLY = HyprlandSocket::getFromSocket("/splash");
+
+    static const auto PENABLESPLASH = Hyprlang::CSimpleConfigValue<Hyprlang::INT>(g_config->hyprlang(), "splash");
+    static const auto PSPLASHOFFSET = Hyprlang::CSimpleConfigValue<Hyprlang::INT>(g_config->hyprlang(), "splash_offset");
+    static const auto PSPLASHALPHA  = Hyprlang::CSimpleConfigValue<Hyprlang::FLOAT>(g_config->hyprlang(), "splash_opacity");
+
+    ASSERT(path.size() > 0);
+
+    m_window = Hyprtoolkit::CWindowBuilder::begin()
+                   ->type(Hyprtoolkit::HT_WINDOW_LAYER)
+                   ->prefferedOutput(output)
+                   ->anchor(0xF)
+                   ->layer(0)
+                   ->preferredSize({0, 0})
+                   ->exclusiveZone(-1)
+                   ->appClass("hyprpaper")
+                   ->commence();
+
+    m_bg = Hyprtoolkit::CRectangleBuilder::begin()
+               ->size({Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, {1, 1}})
+               ->color([] { return Hyprtoolkit::CHyprColor{0xFF000000}; })
+               ->commence();
+    m_null = Hyprtoolkit::CNullBuilder::begin()->size({Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, {1, 1}})->commence();
+
+    m_image = Hyprtoolkit::CImageBuilder::begin()
+                  ->path(std::string{path.front()})
+                  ->size({Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, {1.F, 1.F}})
+                  ->sync(true)
+                  ->fitMode(fitMode)
+                  ->commence();
+
+    m_lastPath = path.front();
+
+    m_image->setPositionMode(Hyprtoolkit::IElement::HT_POSITION_ABSOLUTE);
+    m_image->setPositionFlag(Hyprtoolkit::IElement::HT_POSITION_FLAG_CENTER, true);
+
+    if (path.size() > 1) {
+        m_imagesData = makeUnique<CImagesData>(fitMode, std::vector<std::string>(path), timeout, order);
+        m_timer =
+            m_backend->addTimer(std::chrono::milliseconds(std::chrono::seconds(m_imagesData->timeout)), [this](ASP<Hyprtoolkit::CTimer> self, void*) { onRepeatTimer(); }, nullptr);
+    }
+
+    m_window->m_rootElement->addChild(m_bg);
+    m_window->m_rootElement->addChild(m_null);
+    m_null->addChild(m_image);
+
+    if (SPLASH_REPLY.empty())
+        g_logger->log(LOG_ERR, "Can't get splash: {}", SPLASH_REPLY);
+
+    if (!SPLASH_REPLY.empty() && *PENABLESPLASH) {
+        m_splash = Hyprtoolkit::CTextBuilder::begin()
+                       ->text(SPLASH_REPLY.c_str())
+                       ->fontSize({Hyprtoolkit::CFontSize::HT_FONT_TEXT, 1.15F})
+                       ->color([] { return g_ui->backend()->getPalette()->m_colors.text; })
+                       ->a(*PSPLASHALPHA)
+                       ->commence();
+        m_splash->setPositionMode(Hyprtoolkit::IElement::HT_POSITION_ABSOLUTE);
+        m_splash->setPositionFlag(Hyprtoolkit::IElement::HT_POSITION_FLAG_HCENTER, true);
+        m_splash->setPositionFlag(Hyprtoolkit::IElement::HT_POSITION_FLAG_BOTTOM, true);
+        m_splash->setAbsolutePosition({0.F, sc<float>(-*PSPLASHOFFSET)});
+        m_null->addChild(m_splash);
+    }
+
+    m_window->open();
+}
+
+CWallpaperTarget::~CWallpaperTarget() {
+    if (m_timer && !m_timer->passed())
+        m_timer->cancel();
+}
+
+void CWallpaperTarget::onRepeatTimer() {
+
+    ASSERT(m_imagesData);
+
+    m_lastPath = m_imagesData->nextImage();
+
+    m_image->rebuild()
+        ->path(std::string{m_lastPath})
+        ->size({Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, Hyprtoolkit::CDynamicSize::HT_SIZE_PERCENT, {1.F, 1.F}})
+        ->sync(true)
+        ->fitMode(m_imagesData->fitMode)
+        ->commence();
+
+    m_timer =
+        m_backend->addTimer(std::chrono::milliseconds(std::chrono::seconds(m_imagesData->timeout)), [this](ASP<Hyprtoolkit::CTimer> self, void*) { onRepeatTimer(); }, nullptr);
+
+    IPC::g_IPCSocket->onWallpaperChanged(m_monitorName, m_lastPath);
+}
+
+void CUI::registerOutput(const SP<Hyprtoolkit::IOutput>& mon) {
+    g_matcher->registerOutput(mon->port(), pruneDesc(mon->desc()));
+    if (IPC::g_IPCSocket)
+        IPC::g_IPCSocket->onNewDisplay(mon->port());
+    mon->m_events.removed.listenStatic([this, m = WP<Hyprtoolkit::IOutput>{mon}] {
+        g_matcher->unregisterOutput(m->port());
+        if (IPC::g_IPCSocket)
+            IPC::g_IPCSocket->onRemovedDisplay(m->port());
+        std::erase_if(m_targets, [&m](const auto& e) { return e->m_monitorName == m->port(); });
+    });
+}
+
+bool CUI::run() {
+    static const auto PENABLEIPC = Hyprlang::CSimpleConfigValue<Hyprlang::INT>(g_config->hyprlang(), "ipc");
+
+    //
+    Hyprtoolkit::IBackend::SBackendCreationData data;
+    data.pLogConnection = makeShared<Hyprutils::CLI::CLoggerConnection>(*g_logger);
+    data.pLogConnection->setName("hyprtoolkit");
+    data.pLogConnection->setLogLevel(g_state->verbose ? LOG_TRACE : LOG_ERR);
+
+    m_backend = Hyprtoolkit::IBackend::createWithData(data);
+
+    if (!m_backend)
+        return false;
+
+    if (*PENABLEIPC)
+        IPC::g_IPCSocket = makeUnique<IPC::CSocket>();
+
+    const auto MONITORS = m_backend->getOutputs();
+
+    for (const auto& m : MONITORS) {
+        registerOutput(m);
+    }
+
+    m_listeners.newMon = m_backend->m_events.outputAdded.listen([this](SP<Hyprtoolkit::IOutput> mon) { registerOutput(mon); });
+
+    g_logger->log(LOG_DEBUG, "Found {} output(s)", MONITORS.size());
+
+    // load the config now, then bind
+    for (const auto& m : MONITORS) {
+        targetChanged(m);
+    }
+
+    m_listeners.targetChanged = g_matcher->m_events.monitorConfigChanged.listen([this](const std::string_view& m) { targetChanged(m); });
+
+    m_backend->enterLoop();
+
+    return true;
+}
+
+SP<Hyprtoolkit::IBackend> CUI::backend() {
+    return m_backend;
+}
+
+static Hyprtoolkit::eImageFitMode toFitMode(const std::string_view& sv) {
+    if (sv.starts_with("contain"))
+        return Hyprtoolkit::IMAGE_FIT_MODE_CONTAIN;
+    if (sv.starts_with("cover"))
+        return Hyprtoolkit::IMAGE_FIT_MODE_COVER;
+    if (sv.starts_with("tile"))
+        return Hyprtoolkit::IMAGE_FIT_MODE_TILE;
+    if (sv.starts_with("fill"))
+        return Hyprtoolkit::IMAGE_FIT_MODE_STRETCH;
+    return Hyprtoolkit::IMAGE_FIT_MODE_COVER;
+}
+
+void CUI::targetChanged(const std::string_view& monName) {
+    const auto               MONITORS = m_backend->getOutputs();
+    SP<Hyprtoolkit::IOutput> monitor;
+
+    for (const auto& m : MONITORS) {
+        if (m->port() != monName)
+            continue;
+
+        monitor = m;
+    }
+
+    if (!monitor) {
+        g_logger->log(LOG_ERR, "targetChanged but {} has no output?", monName);
+        return;
+    }
+
+    targetChanged(monitor);
+}
+
+void CUI::targetChanged(const SP<Hyprtoolkit::IOutput>& mon) {
+    const auto TARGET = g_matcher->getSetting(mon->port(), pruneDesc(mon->desc()));
+
+    if (!TARGET) {
+        g_logger->log(LOG_DEBUG, "Monitor {} has no target: no wp will be created", mon->port());
+        return;
+    }
+
+    std::erase_if(m_targets, [&mon](const auto& e) { return e->m_monitorName == mon->port(); });
+
+    m_targets.emplace_back(makeShared<CWallpaperTarget>(m_backend, mon, TARGET->get().paths, toFitMode(TARGET->get().fitMode), TARGET->get().timeout, TARGET->get().order));
+}
+
+const std::vector<SP<CWallpaperTarget>>& CUI::targets() {
+    return m_targets;
+}
