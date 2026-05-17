@@ -77,6 +77,19 @@ INSERT_MODE_INDICATOR="%F{yellow}+ %f"
 
 PROMPT="$PROMPT\$(vi_mode_prompt_info)"
 RPROMPT="\$(vi_mode_prompt_info)$RPROMPT"
+# Ensure terminal shortcuts work in both vi-modes
+bindkey -M viins '^C' copy_to_clipboard  # Insert mode
+bindkey -M vicmd '^C' copy_to_clipboard  # Command mode
+
+bindkey -M viins '^D' send_text_all_\x04
+bindkey -M vicmd '^D' send_text_all_\x04
+
+bindkey -M viins '^H' backward-delete-word  # Ctrl+Backspace
+bindkey -M vicmd '^H' backward-delete-word
+
+# For Ctrl+Shift+V (paste)
+bindkey -M viins '^V' paste_from_clipboard
+bindkey -M vicmd '^V' paste_from_clipboard
 
 #VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 # User configuration
