@@ -68,10 +68,17 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 #plugins=(git z zsh-autosuggestions zsh-syntax-highlighting)
-plugins=(git z zsh-autosuggestions)
+plugins=(git z zsh-autosuggestions vi-mode)
+
 
 source $ZSH/oh-my-zsh.sh
+MODE_INDICATOR="%F{white}+ %f"
+INSERT_MODE_INDICATOR="%F{yellow}+ %f"
 
+PROMPT="$PROMPT\$(vi_mode_prompt_info)"
+RPROMPT="\$(vi_mode_prompt_info)$RPROMPT"
+
+#VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
