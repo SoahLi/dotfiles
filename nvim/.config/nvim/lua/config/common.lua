@@ -265,3 +265,11 @@ vim.keymap.set({ "n", "v", "x" }, ";", "'")
 vim.keymap.set({ "n", "v", "x" }, ":", "\"")
 
 
+-- Enable spell checking for .txt and .md files
+vim.api.nvim_create_autocmd("BufRead", {
+    pattern = { "*.txt", "*.md" },
+    callback = function()
+        vim.opt.spell = true
+        vim.opt.spelllang = "en_us"   -- or your preferred language
+    end,
+})
