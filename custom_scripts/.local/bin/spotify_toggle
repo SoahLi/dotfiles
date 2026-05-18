@@ -46,7 +46,7 @@ focus_and_float() {
   echo "Spotify launched: $SPOTIFY_LAUNCHED"
   if [[ "$SPOTIFY_LAUNCHED" -ne 0 ]]; then 
     if [[ "$WIN_WORKSPACE" -eq "$CURRENT_WORKSPACE" ]]; then
-        hyprctl dispatch movetoworkspacesilent "4,address:$WIN_ADDRESS"
+        hyprctl dispatch movetoworkspacesilent "6,address:$WIN_ADDRESS"
     else # If window is on a different workspace, move it to current workspace
         echo "hello"
         hyprctl dispatch movetoworkspace "$CURRENT_WORKSPACE,address:$WIN_ADDRESS"
