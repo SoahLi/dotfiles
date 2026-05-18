@@ -16,6 +16,7 @@ efibootmgr 18-4
 evtest 1.36-1
 ex-vi-compat 2-1
 firefox 150.0.3-1
+firefox-tridactyl 1.24.5-1
 gcc 16.1.1+r12+g301eb08fa2c5-1
 gimp 3.2.4-1
 git 2.54.0-1
