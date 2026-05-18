@@ -1,148 +1,148 @@
-anki
-base
-base-devel
-bluez
-bluez-utils
-boost
-btop
-capstone
-clang
-cmake
-dbeaver
-discord
-dolphin
-doxygen
-efibootmgr
-evremap-git
-evtest
-ex-vi-compat
-firefox
-gcc
-gimp
-git
-greetd-tuigreet
-grim
-grub
-gwenview
-hdf5
-hyprland
-hyprpaper
-jq
-kitty
-less
-lf
-libinput-tools
-libreoffice-still
-linux
-linux-firmware
-meson
-mpv
-mypy
-neovim
-networkmanager
-ninja
-nodejs
-noto-fonts
-npm
-nvimpager
-openssh
-os-prober
-otf-atkinsonhyperlegiblemono-nerd
-otf-aurulent-nerd
-otf-codenewroman-nerd
-otf-comicshanns-nerd
-otf-commit-mono-nerd
-otf-droid-nerd
-otf-firamono-nerd
-otf-geist-mono-nerd
-otf-hasklig-nerd
-otf-hermit-nerd
-otf-monaspace-nerd
-otf-opendyslexic-nerd
-otf-overpass-nerd
-pipewire-alsa
-pipewire-jack
-pipewire-pulse
-pkgconf
-power-profiles-daemon
-pre-commit
-pyright
-python-pydot
-python-virtualenv
-rofi
-rsync
-rtkit
-scons
-slurp
-spotify-launcher
-stow
-sudo
-syncthing
-tk
-tree-sitter-cli
-ttf-0xproto-nerd
-ttf-3270-nerd
-ttf-adwaitamono-nerd
-ttf-agave-nerd
-ttf-anonymouspro-nerd
-ttf-arimo-nerd
-ttf-bigblueterminal-nerd
-ttf-bitstream-vera-mono-nerd
-ttf-cascadia-code-nerd
-ttf-cascadia-mono-nerd
-ttf-cousine-nerd
-ttf-d2coding-nerd
-ttf-daddytime-mono-nerd
-ttf-dejavu-nerd
-ttf-envycoder-nerd
-ttf-fantasque-nerd
-ttf-firacode-nerd
-ttf-go-nerd
-ttf-gohu-nerd
-ttf-hack-nerd
-ttf-heavydata-nerd
-ttf-iawriter-nerd
-ttf-ibmplex-mono-nerd
-ttf-inconsolata-go-nerd
-ttf-inconsolata-lgc-nerd
-ttf-inconsolata-nerd
-ttf-intone-nerd
-ttf-iosevka-nerd
-ttf-iosevkaterm-nerd
-ttf-iosevkatermslab-nerd
-ttf-jetbrains-mono-nerd
-ttf-lekton-nerd
-ttf-liberation-mono-nerd
-ttf-lilex-nerd
-ttf-martian-mono-nerd
-ttf-meslo-nerd
-ttf-monofur-nerd
-ttf-monoid-nerd
-ttf-mononoki-nerd
-ttf-mplus-nerd
-ttf-ms-fonts
-ttf-nerd-fonts-symbols
-ttf-nerd-fonts-symbols-mono
-ttf-noto-nerd
-ttf-profont-nerd
-ttf-proggyclean-nerd
-ttf-recursive-nerd
-ttf-roboto-mono-nerd
-ttf-sharetech-mono-nerd
-ttf-sourcecodepro-nerd
-ttf-space-mono-nerd
-ttf-terminus-nerd
-ttf-tinos-nerd
-ttf-ubuntu-mono-nerd
-ttf-ubuntu-nerd
-ttf-victor-mono-nerd
-ttf-zed-mono-nerd
-waybar
-wget
-wireplumber
-wl-clipboard
-yay
-yay-debug
-yt-dlp
-zsh
-zsh-autosuggestions
+anki 25.09.2-8
+base 3-3
+base-devel 1-2
+bluez 5.86-6
+bluez-utils 5.86-6
+boost 1.91.0-1
+btop 1.4.7-1
+capstone 5.0.7-2
+clang 22.1.5-1
+cmake 4.3.2-1
+dbeaver 26.0.4-1
+discord 1:1.0.138-1
+dolphin 26.04.1-1
+doxygen 1.16.1-3
+efibootmgr 18-4
+evtest 1.36-1
+ex-vi-compat 2-1
+firefox 150.0.3-1
+gcc 16.1.1+r12+g301eb08fa2c5-1
+gimp 3.2.4-1
+git 2.54.0-1
+greetd-tuigreet 0.9.1-2
+grim 1.5.0-2
+grub 2:2.14-1
+gwenview 26.04.1-1
+hdf5 2.1.1-1
+hyprland 0.55.2-1
+jq 1.8.1-3
+kitty 0.46.2-1
+less 1:692-1
+lf 41-1
+libinput-tools 1.31.2-1
+libreoffice-still 25.8.7-2
+linux 7.0.8.arch1-1
+linux-firmware 20260410-1
+man-db 2.13.1-1
+man-pages 6.18-1
+meson 1.11.1-1
+mpv 1:0.41.0-3
+mypy 1.20.2-1
+neovim 0.12.2-1
+networkmanager 1.56.1-1
+ninja 1.13.2-3
+nodejs 26.1.0-2
+noto-fonts 1:2026.05.01-1
+npm 11.14.1-1
+openssh 10.3p1-1
+os-prober 1.84-1
+otf-atkinsonhyperlegiblemono-nerd 3.4.0-2
+otf-aurulent-nerd 3.4.0-2
+otf-codenewroman-nerd 3.4.0-2
+otf-comicshanns-nerd 3.4.0-2
+otf-commit-mono-nerd 3.4.0-2
+otf-droid-nerd 3.4.0-2
+otf-firamono-nerd 3.4.0-2
+otf-geist-mono-nerd 3.4.0-2
+otf-hasklig-nerd 3.4.0-2
+otf-hermit-nerd 3.4.0-2
+otf-monaspace-nerd 3.4.0-2
+otf-opendyslexic-nerd 3.4.0-2
+otf-overpass-nerd 3.4.0-2
+pipewire-alsa 1:1.6.5-1
+pipewire-jack 1:1.6.5-1
+pipewire-pulse 1:1.6.5-1
+pkgconf 2.5.1-1
+power-profiles-daemon 0.30-1
+pre-commit 4.6.0-1
+pyright 1.1.409-1
+python-pip 26.1.1-1
+python-pydot 4.0.1-1
+python-virtualenv 21.3.3-1
+riscv64-elf-gcc 15.2.0-1
+riscv64-elf-newlib 4.6.0.20260123-1
+rofi 2.0.0-1
+rsync 3.4.2-1
+rtkit 0.14-1
+rust 1:1.95.0-1
+scons 4.10.1-2
+slurp 1.5.0-2
+spotify-launcher 0.6.5-1
+stow 2.4.1-1
+sudo 1.9.17.p2-2
+syncthing 2.1.0-1
+tk 8.6.16-1
+tree-sitter-cli 0.26.8-1
+ttf-0xproto-nerd 3.4.0-2
+ttf-3270-nerd 3.4.0-2
+ttf-adwaitamono-nerd 3.4.0-2
+ttf-agave-nerd 3.4.0-2
+ttf-anonymouspro-nerd 3.4.0-2
+ttf-arimo-nerd 3.4.0-2
+ttf-bigblueterminal-nerd 3.4.0-2
+ttf-bitstream-vera-mono-nerd 3.4.0-2
+ttf-cascadia-code-nerd 3.4.0-2
+ttf-cascadia-mono-nerd 3.4.0-2
+ttf-cousine-nerd 3.4.0-2
+ttf-d2coding-nerd 3.4.0-2
+ttf-daddytime-mono-nerd 3.4.0-2
+ttf-dejavu-nerd 3.4.0-2
+ttf-envycoder-nerd 3.4.0-2
+ttf-fantasque-nerd 3.4.0-2
+ttf-firacode-nerd 3.4.0-2
+ttf-go-nerd 3.4.0-2
+ttf-gohu-nerd 3.4.0-2
+ttf-hack-nerd 3.4.0-2
+ttf-heavydata-nerd 3.4.0-2
+ttf-iawriter-nerd 3.4.0-2
+ttf-ibmplex-mono-nerd 3.4.0-2
+ttf-inconsolata-go-nerd 3.4.0-2
+ttf-inconsolata-lgc-nerd 3.4.0-2
+ttf-inconsolata-nerd 3.4.0-2
+ttf-intone-nerd 3.4.0-2
+ttf-iosevka-nerd 3.4.0-2
+ttf-iosevkaterm-nerd 3.4.0-2
+ttf-iosevkatermslab-nerd 3.4.0-2
+ttf-jetbrains-mono-nerd 3.4.0-2
+ttf-lekton-nerd 3.4.0-2
+ttf-liberation-mono-nerd 3.4.0-2
+ttf-lilex-nerd 3.4.0-2
+ttf-martian-mono-nerd 3.4.0-2
+ttf-meslo-nerd 3.4.0-2
+ttf-monofur-nerd 3.4.0-2
+ttf-monoid-nerd 3.4.0-2
+ttf-mononoki-nerd 3.4.0-2
+ttf-mplus-nerd 3.4.0-2
+ttf-nerd-fonts-symbols 3.4.0-1
+ttf-nerd-fonts-symbols-mono 3.4.0-1
+ttf-noto-nerd 3.4.0-2
+ttf-profont-nerd 3.4.0-2
+ttf-proggyclean-nerd 3.4.0-2
+ttf-recursive-nerd 3.4.0-2
+ttf-roboto-mono-nerd 3.4.0-2
+ttf-sharetech-mono-nerd 3.4.0-2
+ttf-sourcecodepro-nerd 3.4.0-2
+ttf-space-mono-nerd 3.4.0-2
+ttf-terminus-nerd 3.4.0-2
+ttf-tinos-nerd 3.4.0-2
+ttf-ubuntu-mono-nerd 3.4.0-2
+ttf-ubuntu-nerd 3.4.0-2
+ttf-victor-mono-nerd 3.4.0-2
+ttf-zed-mono-nerd 3.4.0-2
+waybar 0.15.0-2
+wget 1.25.0-4
+wireplumber 0.5.14-1
+wl-clipboard 1:2.3.0-1
+yt-dlp 2026.03.17-1
+zsh 5.9-6
+zsh-autosuggestions 0.7.1-1
