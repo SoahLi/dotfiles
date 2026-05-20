@@ -16,7 +16,6 @@ efibootmgr 18-4
 evtest 1.36-1
 ex-vi-compat 2-1
 firefox 150.0.3-1
-firefox-tridactyl 1.24.5-1
 gcc 16.1.1+r12+g301eb08fa2c5-1
 gimp 3.2.4-1
 git 2.54.0-1
@@ -147,3 +146,4 @@ wl-clipboard 1:2.3.0-1
 yt-dlp 2026.03.17-1
 zsh 5.9-6
 zsh-autosuggestions 0.7.1-1
+zsh-syntax-highlighting 0.8.0-2
