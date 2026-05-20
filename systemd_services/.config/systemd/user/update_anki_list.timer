@@ -1,0 +1,11 @@
+[Unit]
+Description=Updates a specialize anki deck with recently viewed media
+
+[Timer]
+#OnCalendar=daily
+OnCalendar=daily
+
+Persistent=true
+
+[Install]
+WantedBy=timers.target

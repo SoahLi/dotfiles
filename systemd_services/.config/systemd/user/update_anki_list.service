@@ -1,0 +1,9 @@
+[Unit]
+Description=Run anki updates for special media deck
+OnFailure=system-notify@%i.service
+
+[Service]
+ExecStart=/home/owen/hello_world
+
+[Install]
+WantedBy=multi-user.target
