@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+ 
+
+
+notify-send "updating anki sm_memorize deck"
+anki &
+sleep 200
+pkill -x anki
+notify-send "finished updating sm_memorize"

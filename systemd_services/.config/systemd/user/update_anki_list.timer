@@ -2,7 +2,7 @@
 Description=Updates a specialize anki deck with recently viewed media
 
 [Timer]
-#OnCalendar=daily
+#OnCalendar=*:0/10
 OnCalendar=daily
 
 Persistent=true

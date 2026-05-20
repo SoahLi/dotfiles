@@ -3,7 +3,7 @@ Description=Run anki updates for special media deck
 OnFailure=system-notify@%i.service
 
 [Service]
-ExecStart=/home/owen/hello_world
+ExecStart=/home/owen/.local/bin/update_sm_memorize
 
 [Install]
 WantedBy=multi-user.target
