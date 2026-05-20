@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+sudo cp -r ~/.config/mozilla/firefox/qlzblabf.default-release/* /mnt/backup_drive/firefox_backup/
+#TODO: stop using absolute pathing
+sudo rsync -va /home/owen/ /mnt/backup_drive/owen_home_backup
