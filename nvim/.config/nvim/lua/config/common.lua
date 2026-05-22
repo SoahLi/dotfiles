@@ -103,6 +103,7 @@ vim.api.nvim_create_autocmd("CursorHold", {
 	end,
 })
 
+-- focus diagnostics
 vim.keymap.set("n", "<leader>df", function()
 	vim.diagnostic.open_float(nil, {
 		focusable = true,
@@ -127,6 +128,8 @@ vim.keymap.set("n", "<S-l>", "<C-w>l")
 vim.keymap.set("n", "<S-j>", "<C-w>j")
 vim.keymap.set("n", "<S-k>", "<C-w>k")
 vim.keymap.set("n", "<C-j>", "J", { noremap = true })  -- Join lines
+
+vim.keymap.set('n', '<C-w>', '<C-w>c', { noremap = true, silent = true, nowait = true })
 
 -- open new terminal
 vim.api.nvim_set_keymap("n", "<leader>to", "terminal<CR>", { noremap = true, silent = true })
@@ -279,3 +282,5 @@ vim.api.nvim_create_autocmd("BufRead", {
         vim.opt.spelllang = "en_us"   -- or your preferred language
     end,
 })
+
+
