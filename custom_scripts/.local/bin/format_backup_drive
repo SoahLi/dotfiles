@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Check if exactly one argument is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <device_path>"
+    echo "Example: $0 /dev/sdb"
+    exit 1
+fi
+
+DEVICE="$1"
+
+# Check if the device exists
+if [ ! -b "$DEVICE" ]; then
+    echo "Error: $DEVICE is not a valid block device."
+    exit 2
+fi
+
+# Prompt the user for confirmation before proceeding
+read -p "Are you sure you want to erase ALL data on $DEVICE? This cannot be undone. Type 'YES' to continue: " CONFIRMATION
+if [ "$CONFIRMATION" != "YES" ]; then
+    echo "Aborted. No changes made."
+    exit 3
+fi
+
+echo "Formatting $DEVICE..."
+
+# Wipe all existing partition data and create a fresh GPT partition table
+echo "Erasing all partitions..."
+sudo sgdisk --zap-all "$DEVICE"
+
+# Create partition 1: 100GB, Microsoft basic data
+echo "Creating 100GB partition..."
+sudo sgdisk --new=1:0:+100G --typecode=1:0700 --change-name=1:"ff_backup" "$DEVICE"
+
+# Create partition 2: rest of the disk, Microsoft basic data
+echo "Creating second partition with remaining space..."
+sudo sgdisk --new=2:0:0 --typecode=2:0700 --change-name=2:"owen_backup" "$DEVICE"
+
+# Inform the kernel of the partition table changes
+sudo partprobe "$DEVICE"
+
+# Format partition 1 as FAT32
+echo "Formatting partition 1 as FAT32..."
+sudo mkfs.fat -F 32 -n "ff_backup" "${DEVICE}1"
+
+# Format partition 2 as FAT32
+echo "Formatting partition 2 as FAT32..."
+sudo mkfs.ext4 -L "owen_backup" "${DEVICE}2"
+
+echo ""
+echo "Done! $DEVICE has been formatted:"
+echo "  ${DEVICE}1 - 100GB  (FAT32, label: BACKUP_SM)"
+echo "  ${DEVICE}2 - rest   (FAT32, label: BACKUP_LG)"

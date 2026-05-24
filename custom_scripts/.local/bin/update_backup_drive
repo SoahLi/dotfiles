@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
-sudo cp -r ~/.config/mozilla/firefox/qlzblabf.default-release/* /mnt/backup_drive/firefox_backup/
+
+#attempt to mount my backup partition on samsung T7 Shield (I should probably create a config that can properly format it).
+#this is an ext4 partition named owen_backup
+sudo mkdir -p /mnt/linux_backup_for_user
+sudo mount -L owen_backup /mnt/linux_backup_for_user
 #TODO: stop using absolute pathing
-sudo rsync -va /home/owen/ /mnt/backup_drive/owen_home_backup
+sudo rsync -va /home/owen/ /mnt/linux_backup_for_user/
+
+#attempt to mount my firefox_backup partition 
+#this is an exFAT partition named ff_backup
+sudo mkdir /mnt/firefox_backup_for_user/
+sudo mount -L ff_backup /mnt/firefox_backup_for_user
+sudo mkdir /mnt/firefox_backup_for_user/owen
+sudo rsync --no-links -va ~/.config/mozilla/firefox/qlzblabf.default-release/* /mnt/firefox_backup_for_user/owen/
