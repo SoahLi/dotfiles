@@ -20,6 +20,14 @@ vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,
 -- CONFIGURABLE: Different preferences for different workspaces
 vim.opt.wrap = false
 
+-- Enable wrap only for Markdown files
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.opt_local.wrap = true
+  end,
+})
+
 --
 --
 --
