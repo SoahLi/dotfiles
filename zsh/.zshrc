@@ -150,30 +150,6 @@ alias backgroundopacity="background_opacity"
 alias activitymonitor="btop"
 
 
-# Alternative: Downscale using video filter
-videobackground() {
-  # Set monitors: use all monitors if "." is passed, else use the argument
-  if [[ $# -lt 2 ]]; then
-    echo "Usage: videobackground <eDP-1 HDMI-A-2 or . for all> <video_path> [--bg]"
-    return 1
-  fi
-  bg_mode=0
-  if [[ "$3" == "--bg" ]]; then
-    bg_mode=1
-  fi
-  if [[ "$2" == "." ]]; then
-    monitors="eDP-1 HDMI-A-2"
-  else
-    monitors="$2"
-  fi
-  if [[ $bg_mode -eq 1 ]]; then
-    nohup mpvpaper -p -o 'loop-file=inf geometry=100% panscan=1.0 no-audio scale=bilinear vf=scale=1920:-1' $monitors $1 > /dev/null 2>&1 &
-  else
-    mpvpaper -p -o 'loop-file=inf geometry=100% panscan=1.0 no-audio scale=bilinear vf=scale=1920:-1' $monitors $1
-  fi
-}
-
-alias videobackground="videobackground"
 
 alias commands="grep '^alias ' ~/.zshrc | grep -v 'alias python=' | sed 's/^alias //'"
 
