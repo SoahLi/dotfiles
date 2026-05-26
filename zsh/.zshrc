@@ -70,7 +70,7 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 #plugins=(git z zsh-autosuggestions zsh-syntax-highlighting)
-plugins=(git z zsh-autosuggestions vi-mode zsh-syntax-highlighting)
+plugins=(git z vi-mode)
 
 
 source $ZSH/oh-my-zsh.sh
@@ -211,7 +211,8 @@ lf() {
     rm -f "$lf_cd_file"
 }
 
-
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 path=($path /home/owen/.config/awww/target/release)
 #source /home/owen/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
