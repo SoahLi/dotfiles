@@ -6,7 +6,7 @@
 sudo mkdir -p /mnt/linux_backup_for_user
 sudo mount -L owen_backup /mnt/linux_backup_for_user
 #TODO: stop using absolute pathing
-sudo rsync -va /home/owen/ /mnt/linux_backup_for_user/
+sudo rsync -va --exclude='.cache/' /home/owen/ /mnt/linux_backup_for_user/
 
 #attempt to mount my firefox_backup partition 
 #this is an exFAT partition named ff_backup
