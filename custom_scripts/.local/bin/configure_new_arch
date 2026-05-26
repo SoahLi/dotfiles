@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# This is start of a script I would like to use to manage things like oh-my-zsh, which doesn't have an AUR package
+
+
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
