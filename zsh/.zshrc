@@ -5,7 +5,9 @@
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 #ZSH_THEME="random"
-ZSH_THEME="jonathan"
+
+# this was replaced by oh-my-posh
+#ZSH_THEME="jonathan"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -72,8 +74,11 @@ plugins=(git z zsh-autosuggestions vi-mode zsh-syntax-highlighting)
 
 
 source $ZSH/oh-my-zsh.sh
-MODE_INDICATOR="%F{white}+ %f"
-INSERT_MODE_INDICATOR="%F{yellow}+ %f"
+
+
+#disabled by oh-my-posh
+#MODE_INDICATOR="%F{white}+ %f"
+#INSERT_MODE_INDICATOR="%F{yellow}+ %f"
 
 PROMPT="$PROMPT\$(vi_mode_prompt_info)"
 RPROMPT="\$(vi_mode_prompt_info)$RPROMPT"
@@ -209,3 +214,6 @@ lf() {
 
 path=($path /home/owen/.config/awww/target/release)
 #source /home/owen/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+#if you want to use oh-my-posh
+eval "$(oh-my-posh init zsh --config ~/.oh_my_posh_config.omp.json)"
