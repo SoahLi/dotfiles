@@ -16,7 +16,7 @@ return {
 			map("n", "<A-<>", "<Cmd>BufferMovePrevious<CR>", opts)
 			map("n", "<A->>", "<Cmd>BufferMoveNext<CR>", opts)
 			-- Close buffer
-			map("n", "<A-c>", "<Cmd>BufferClose<CR>", opts)
+			map("n", "<A-z>", "<Cmd>BufferClose<CR>", opts)
 			-- flash style picker
 			map("n", "<C-p>", "<Cmd>BufferPick<CR>", opts)
 		end,
