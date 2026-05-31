@@ -31,8 +31,6 @@ vim.api.nvim_create_autocmd("FileType", {
 --
 --
 --
---
---
 -- Print the line number in front of each line
 vim.o.number = true
 vim.opt.conceallevel = 2
@@ -140,11 +138,8 @@ vim.keymap.set("n", "<S-l>", "<C-w>l")
 vim.keymap.set("n", "<S-j>", "<C-w>j")
 vim.keymap.set("n", "<S-k>", "<C-w>k")
 
-vim.keymap.set("n", "<C-j>", "J", { noremap = true })  -- Join lines
-
+vim.keymap.set("n", "F", "J", { noremap = true })  -- Join lines
 vim.keymap.set('n', '<C-w>', '<C-w>c', { noremap = true, silent = true, nowait = true })
-
-vim.keymap.set('n', '<C-l>', '<C-]>', { noremap = true, silent = true, nowait = true })
 
 -- open new terminal
 vim.api.nvim_set_keymap("n", "<leader>to", "terminal<CR>", { noremap = true, silent = true })
@@ -175,6 +170,13 @@ vim.cmd([[
   cnoremap <expr> <BS> getcmdline() == '' ? '<Right>' : "\<BS>"
 ]])
 
+-- half page movement
+vim.keymap.set('n', '<C-j>', '<C-d>', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-k>', '<C-u>', { noremap = true, silent = true })
+
+-- replaces your C-] mapping
+vim.keymap.set('n', '<C-S-A-F9>', '<C-]>', { noremap = true, silent = true, nowait = true })
+
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
 	callback = function(event)
@@ -186,7 +188,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- https://neovim.io/doc/user/news-0.11.html#_defaults
 
 		map("gl", vim.diagnostic.open_float, "Open Diagnostic Float")
-		map("<C-k>", vim.lsp.buf.hover, "Hover Documentation")
+		map("<C-l>", vim.lsp.buf.hover, "Hover Documentation")
 		map("gs", vim.lsp.buf.signature_help, "Signature Documentation")
 		map("gD", vim.lsp.buf.declaration, "Goto Declaration")
 		map("<leader>la", vim.lsp.buf.code_action, "Code Action")
