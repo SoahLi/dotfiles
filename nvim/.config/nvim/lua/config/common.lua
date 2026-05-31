@@ -235,7 +235,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 --highlight text after pasting it
-vim.api.nvim_set_keymap("n", "p", "p`[v`]", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "p", "p`[v`]", { noremap = true })
 vim.api.nvim_set_keymap("n", "P", "P`[v`]", { noremap = true })
 
 -- open new tabs to the right (I think?)
