@@ -121,23 +121,30 @@ vim.keymap.set("n", "<leader>df", function()
 	})
 end, { desc = "Open focused diagnostic window" })
 
+-- for kinesis advantage
+vim.keymap.set({ "n", "v", "x" }, "'", ":")
+vim.keymap.set({ "n", "v", "x" }, "\"", ":")
+vim.keymap.set({ "n", "v", "x" }, ";", "'")
+vim.keymap.set({ "n", "v", "x" }, ":", "\"")
+
+
 vim.keymap.set("n", "=", [[<cmd>vertical resize +5<cr>]]) -- make the window biger vertically
 vim.keymap.set("n", "-", [[<cmd>vertical resize -5<cr>]]) -- make the window smaller vertically
 vim.keymap.set("n", "+", [[<cmd>horizontal resize +2<cr>]]) -- make the window bigger horizontally by pressing shift and =
 vim.keymap.set("n", "_", [[<cmd>horizontal resize -2<cr>]]) -- make the window smaller horizontally by pressing shift and -
 
---vim.keymap.set("n", "<C-h>", "<C-w>h")
---vim.keymap.set("n", "<C-l>", "<C-w>l")
---vim.keymap.set("n", "<C-j>", "<C-w>j")
---vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set('n', 'R', '<C-r>', { noremap = true })
 
 vim.keymap.set("n", "<S-h>", "<C-w>h")
 vim.keymap.set("n", "<S-l>", "<C-w>l")
 vim.keymap.set("n", "<S-j>", "<C-w>j")
 vim.keymap.set("n", "<S-k>", "<C-w>k")
+
 vim.keymap.set("n", "<C-j>", "J", { noremap = true })  -- Join lines
 
 vim.keymap.set('n', '<C-w>', '<C-w>c', { noremap = true, silent = true, nowait = true })
+
+vim.keymap.set('n', '<C-l>', '<C-]>', { noremap = true, silent = true, nowait = true })
 
 -- open new terminal
 vim.api.nvim_set_keymap("n", "<leader>to", "terminal<CR>", { noremap = true, silent = true })
@@ -161,6 +168,7 @@ vim.keymap.set("i", "<M-BS>", "<C-W>", { noremap = true, silent = true })
 -- re highlight text when shifting code blocks left or right
 vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("v", "<", "<gv")
+
 
 -- prevent command line from exiting if you press backspace with an empty carriage
 vim.cmd([[
@@ -275,13 +283,6 @@ vim.api.nvim_create_user_command("LspRestart", function()
 end, {})
 
 
--- for kinesis advantage
-vim.keymap.set({ "n", "v", "x" }, "'", ":")
-vim.keymap.set({ "n", "v", "x" }, "\"", ":")
-vim.keymap.set({ "n", "v", "x" }, ";", "'")
-vim.keymap.set({ "n", "v", "x" }, ":", "\"")
-
-
 -- Enable spell checking for .txt and .md files
 vim.api.nvim_create_autocmd("BufRead", {
     pattern = { "*.txt", "*.md" },
@@ -290,5 +291,4 @@ vim.api.nvim_create_autocmd("BufRead", {
         vim.opt.spelllang = "en_us"   -- or your preferred language
     end,
 })
-
 
