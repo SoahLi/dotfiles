@@ -138,7 +138,7 @@ vim.keymap.set("n", "<S-l>", "<C-w>l")
 vim.keymap.set("n", "<S-j>", "<C-w>j")
 vim.keymap.set("n", "<S-k>", "<C-w>k")
 
-vim.keymap.set("n", "F", "J", { noremap = true })  -- Join lines
+vim.keymap.set("n", "Z", "J", { noremap = true })  -- Join lines
 vim.keymap.set('n', '<C-w>', '<C-w>c', { noremap = true, silent = true, nowait = true })
 
 -- open new terminal
