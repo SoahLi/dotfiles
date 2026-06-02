@@ -2,6 +2,7 @@
 evremap-git r51.cc618e8-1
 gcc14 14.3.1+r516+g5998566829ee-1
 nvimpager 0.13.0-1
+oh-my-posh 29.14.0-1
 pistol-bin 0.5.3-2
 ttf-ms-fonts 2.0-12
 yay 12.5.7-1
