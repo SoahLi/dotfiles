@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <model-name>"
+    echo "Example: $0 meta-llama/Llama-2-7b-hf"
+    exit 1
+fi
+
+MODEL_NAME="$1"
+SCRIPT_DIR="$HOME/.local/share/"
+ESTIMATE_DIR="$SCRIPT_DIR/estimate_model"
+
+# 1. Create the directory if it doesn't exist
+if [ ! -d "$ESTIMATE_DIR" ]; then
+    echo "Creating directory: $ESTIMATE_DIR"
+    mkdir -p "$ESTIMATE_DIR"
+fi
+
+# 2. cd into it
+cd "$ESTIMATE_DIR"
+
+# 3. Create venv if it doesn't exist
+if [ ! -d ".venv" ]; then
+    echo "Creating virtual environment..."
+    python -m venv .venv
+fi
+
+# 4. Source into the venv
+source .venv/bin/activate
+
+# 5. Install dependencies (quietly, only show errors)
+echo "Installing dependencies..."
+pip install --quiet accelerate transformers
+
+# 6. Run the memory estimate
+echo ""
+echo "Estimating VRAM for: $MODEL_NAME"
+echo "----------------------------------------"
+accelerate estimate-memory "$MODEL_NAME"
+echo "----------------------------------------"
+
+# 7. Exit the venv
+deactivate
