@@ -148,6 +148,7 @@ background_opacity() {
 }
 alias backgroundopacity="background_opacity"
 alias activitymonitor="btop"
+alias restart_evremap="systemctl restart evremap.service"
 
 
 
