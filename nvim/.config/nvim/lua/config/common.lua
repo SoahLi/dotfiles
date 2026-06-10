@@ -133,10 +133,10 @@ vim.keymap.set("n", "_", [[<cmd>horizontal resize -2<cr>]]) -- make the window s
 
 vim.keymap.set('n', 'R', '<C-r>', { noremap = true })
 
-vim.keymap.set("n", "<S-h>", "<C-w>h")
-vim.keymap.set("n", "<S-l>", "<C-w>l")
-vim.keymap.set("n", "<S-j>", "<C-w>j")
-vim.keymap.set("n", "<S-k>", "<C-w>k")
+vim.keymap.set("n", "<left>", "<C-w>h")
+vim.keymap.set("n", "<right>", "<C-w>l")
+vim.keymap.set("n", "<up>", "<C-w>j")
+vim.keymap.set("n", "<down>", "<C-w>k")
 
 vim.keymap.set("n", "Z", "J", { noremap = true })  -- Join lines
 vim.keymap.set('n', '<C-w>', '<C-w>c', { noremap = true, silent = true, nowait = true })
