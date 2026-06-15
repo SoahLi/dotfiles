@@ -55,6 +55,48 @@ vim.o.smartcase = true
 -- Highlight the line where the cursor is on
 vim.o.cursorline = true
 
+--CODE FOR TOGGLING LINE NUMBER COLORS
+-- Save original highlight colors (do this once when Neovim starts)
+local original_colors = {}
+
+local function save_original_colors()
+  local line_nr = vim.api.nvim_get_hl(0, { name = 'LineNr' })
+  local cursor_line_nr = vim.api.nvim_get_hl(0, { name = 'CursorLineNr' })
+  original_colors.LineNr = { fg = line_nr.fg, bg = line_nr.bg, bold = line_nr.bold, italic = line_nr.italic }
+  original_colors.CursorLineNr = { fg = cursor_line_nr.fg, bg = cursor_line_nr.bg, bold = cursor_line_nr.bold, italic = cursor_line_nr.italic }
+end
+
+-- Apply light gray scheme
+local function set_light_gray()
+  vim.api.nvim_set_hl(0, 'LineNr', { fg = '#d3d3d3' })      -- light gray
+  vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = '#a9a9a9' }) -- slightly darker for focused line
+end
+
+-- Restore original scheme
+local function restore_original()
+  vim.api.nvim_set_hl(0, 'LineNr', original_colors.LineNr)
+  vim.api.nvim_set_hl(0, 'CursorLineNr', original_colors.CursorLineNr)
+end
+
+-- Toggle state
+local toggled = false
+
+local function toggle_line_numbers()
+  if not toggled then
+    save_original_colors()
+    set_light_gray()
+    toggled = true
+  else
+    restore_original()
+    toggled = false
+  end
+end
+
+-- Map F11 to toggle
+vim.keymap.set('n', '<F11>', toggle_line_numbers, { desc = 'Toggle line number colors' })
+
+--END CODE FOR TOGGLING LINE NUMBER COLORS
+
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10 
 
