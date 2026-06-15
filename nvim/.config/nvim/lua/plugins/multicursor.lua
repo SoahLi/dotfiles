@@ -9,7 +9,7 @@ return {
 
         -- Add or skip cursor above/below the main cursor.
         -- set({"n", "x"}, "n", function() mc.lineAddCursor(-1) end)
-        set({"n", "x"}, "n", function() mc.lineAddCursor(1) end)
+        set({"n", "x"}, "m", function() mc.lineAddCursor(1) end)
         -- set({"n", "x"}, "<leader><up>", function() mc.lineSkipCursor(-1) end)
         -- set({"n", "x"}, "<leader><down>", function() mc.lineSkipCursor(1) end)
 
