@@ -1,111 +1,65 @@
 #!/usr/bin/env bash
 
-# Configuration
 STORAGE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/hide_window"
 STORAGE_FILE="${STORAGE_DIR}/hidden_window"
-
-echo "$STORAGE_DIR"
-echo "$STORAGE_FILE"
-
-# Ensure storage directory exists
 mkdir -p "$STORAGE_DIR"
 
-# Get the currently focused window's address and class
+# Get focused window info: address, class, workspace id, and workspace name
 get_focused_window_info() {
-    hyprctl clients -j | jq -r '.[] | select(.focusHistoryID == 0) | "\(.address)|\(.class)"'
+    hyprctl activewindow -j | jq -r '"\(.address)|\(.class)|\(.workspace.id)|\(.workspace.name)"'
 }
 
-# Get window address by class (for checking if hidden window still exists)
-get_window_address_by_class() {
-    local class="$1"
-    hyprctl clients -j | jq -r ".[] | select(.class == \"$class\") | .address" | head -n1
+# Determine where to restore by checking the monitor's state directly:
+get_destination_workspace() {
+    hyprctl monitors -j | jq -r '.[] | select(.focused == true) | if .specialWorkspace.id < 0 then .specialWorkspace.name else .activeWorkspace.name end'
 }
 
-# Hide the current window (move to workspace 4)
-hide_window() {
-    local win_address="$1"
-    local win_class="$2"
-    
-    # Store window info
-    echo "{\"address\":\"$win_address\",\"class\":\"$win_class\"}" > "$STORAGE_FILE"
-    
-    # Move to workspace 4 silently
-    hyprctl dispatch movetoworkspacesilent "4,address:$win_address"
-    
-    echo "Hidden window: $win_class ($win_address)"
-}
+if [[ -f "$STORAGE_FILE" ]]; then
+    # ---------- RESTORE ----------
+    stored_address=$(jq -r '.address' "$STORAGE_FILE")
+    stored_class=$(jq -r '.class' "$STORAGE_FILE")
 
-# Restore the hidden window
-restore_window() {
-    if [[ ! -f "$STORAGE_FILE" ]]; then
-        echo "No hidden window found"
-        return 1
-    fi
-
-    # Read stored window info
-    local stored_address=$(jq -r '.address' "$STORAGE_FILE")
-    local stored_class=$(jq -r '.class' "$STORAGE_FILE")
-    
-    # Check if window still exists
-    local current_address=$(hyprctl clients -j | jq -r ".[] | select(.address == \"$stored_address\") | .address")
-
-    echo "Stored class: $stored_class - Current address: $current_address - Stored address: $stored_address"
-    
+    # Check if the window still exists
+    current_address=$(hyprctl clients -j | jq -r ".[] | select(.address == \"$stored_address\") | .address")
     if [[ -z "$current_address" ]]; then
-        echo "Window '$stored_class' no longer exists"
+        echo "Window '$stored_class' no longer exists – removing storage."
         rm -f "$STORAGE_FILE"
-        return 1
+        exit 1
     fi
-    
-    # Get current workspace
-    local current_workspace=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .activeWorkspace.id')
-    
-    echo "Current workspace: $current_workspace"
-    # Move window to current workspace
-    hyprctl dispatch movetoworkspace "$current_workspace,address:$current_address"
-    
-    # Make it floating if it isn't already
-    
-    # Focus the window
+
+    dest_workspace=$(get_destination_workspace)
+    hyprctl dispatch movetoworkspace "$dest_workspace,address:$current_address"
     hyprctl dispatch focuswindow "address:$current_address"
-    
-    # Remove storage file
     rm -f "$STORAGE_FILE"
-    
-    echo "Restored window: $stored_class"
-}
+    echo "Restored window: $stored_class to workspace $dest_workspace"
 
-# Main logic
-main() {
-    # Check if we have a hidden window
-    if [[ -f "$STORAGE_FILE" ]]; then
-        # Restore the hidden window
-        restore_window
-    else
-        # Hide the current window
-        local window_info=$(get_focused_window_info)
-        
-        if [[ -z "$window_info" ]]; then
-            echo "No focused window found"
-            exit 1
-        fi
-        
-        IFS='|' read -r win_address win_class <<< "$window_info"
-        
-        # Get window's current workspace
-        local win_workspace=$(hyprctl clients -j | jq -r ".[] | select(.address == \"$win_address\") | .workspace.id")
-        local current_workspace=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .activeWorkspace.id')
-        
-        # Only hide if window is on current workspace
-        if [[ "$win_workspace" -eq "$current_workspace" ]]; then
-            # Hide it
-            hide_window "$win_address" "$win_class"
-        else
-            echo "Window is not on current workspace"
-            exit 1
-        fi
+else
+    # ---------- HIDE ----------
+    win_info=$(get_focused_window_info)
+    if [[ -z "$win_info" ]]; then
+        echo "No focused window found."
+        exit 1
     fi
-}
 
-# Run main function
-main
+    IFS='|' read -r win_address win_class win_workspace_id win_workspace_name <<< "$win_info"
+    current_workspace_name=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .activeWorkspace.name')
+    current_workspace_id=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .activeWorkspace.id')
+
+    win_workspace_num=$((win_workspace_id))
+    current_workspace_num=$((current_workspace_id))
+
+    # If window is on a special workspace (negative id), hide it unconditionally.
+    # Otherwise, only hide if it's on the current regular workspace.
+    if [[ $win_workspace_num -lt 0 ]]; then
+        echo "{\"address\":\"$win_address\",\"class\":\"$win_class\"}" > "$STORAGE_FILE"
+        hyprctl dispatch movetoworkspacesilent "4,address:$win_address"
+        echo "Hidden special-workspace window: $win_class ($win_address)"
+    elif [[ $win_workspace_num -eq $current_workspace_num ]]; then
+        echo "{\"address\":\"$win_address\",\"class\":\"$win_class\"}" > "$STORAGE_FILE"
+        hyprctl dispatch movetoworkspacesilent "4,address:$win_address"
+        echo "Hidden window: $win_class ($win_address)"
+    else
+        echo "Window is not on current workspace (window workspace: $win_workspace_num, current: $current_workspace_num)"
+        exit 1
+    fi
+fi
