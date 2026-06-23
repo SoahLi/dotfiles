@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Restores owen_backup / ff_backup onto a new machine so /home/owen and the
+# Firefox profile end up exactly matching what's on the backup drive.
+#
+# Uses --delete on both rsyncs: this is a mirror, not a merge. Anything on the
+# new machine that ISN'T on the backup drive (under these paths) gets removed.
+
+set -euo pipefail
+
+LINUX_BACKUP_LABEL="owen_backup"
+FF_BACKUP_LABEL="ff_backup"
+LINUX_MOUNT="/mnt/linux_backup_for_user"
+FF_MOUNT="/mnt/firefox_backup_for_user"
+FF_BACKUP_SUBDIR="owen"                       # folder name created by the backup script
+
+TARGET_HOME="/home/owen"
+FF_PROFILE_NAME="qlzblabf.default-release"     # same profile folder name as the backup
+FF_PROFILE_DEST="${TARGET_HOME}/.config/mozilla/firefox/${FF_PROFILE_NAME}"
+
+echo "== Restoring Linux home backup (label: ${LINUX_BACKUP_LABEL}) =="
+sudo mkdir -p "${LINUX_MOUNT}"
+if ! mountpoint -q "${LINUX_MOUNT}"; then
+    sudo mount -L "${LINUX_BACKUP_LABEL}" "${LINUX_MOUNT}"
+fi
+
+sudo mkdir -p "${TARGET_HOME}"
+sudo rsync -va --delete --exclude='.cache/' "${LINUX_MOUNT}/" "${TARGET_HOME}/"
+sudo chown -R owen:owen "${TARGET_HOME}"
+
+echo
+echo "== Restoring Firefox backup (label: ${FF_BACKUP_LABEL}) =="
+sudo mkdir -p "${FF_MOUNT}"
+if ! mountpoint -q "${FF_MOUNT}"; then
+    sudo mount -L "${FF_BACKUP_LABEL}" "${FF_MOUNT}"
+fi
+
+FF_SOURCE="${FF_MOUNT}/${FF_BACKUP_SUBDIR}"
+mkdir -p "${FF_PROFILE_DEST}"
+rsync --no-links -va --delete "${FF_SOURCE}/" "${FF_PROFILE_DEST}/"
+sudo chown -R owen:owen "${FF_PROFILE_DEST}"
+
+echo
+echo "Done. Note: this restores the profile FOLDER, but not Firefox's profiles.ini"
+echo "(that file lives one level up and wasn't part of the original backup), so on a"
+echo "fresh Firefox install you may need to point profiles.ini at ${FF_PROFILE_NAME}"
+echo "or select it manually via 'about:profiles' for Firefox to use it as default."
+echo
+echo "Unmount when finished:"
+echo "  sudo umount ${LINUX_MOUNT}"
+echo "  sudo umount ${FF_MOUNT}"
