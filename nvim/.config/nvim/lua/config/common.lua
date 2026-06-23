@@ -336,3 +336,19 @@ vim.api.nvim_create_autocmd("BufRead", {
     end,
 })
 
+
+
+
+-- Create an augroup to prevent duplicate autocmds on reload
+local indent_group = vim.api.nvim_create_augroup("LanguageIndent", { clear = true })
+
+-- Set 4 spaces for Python and C++
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "python", "cpp", "c" },
+  group = indent_group,
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.expandtab = true
+  end,
+})
