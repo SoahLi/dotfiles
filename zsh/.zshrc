@@ -195,3 +195,6 @@ path=($path /home/owen/.config/awww/target/release)
 
 #if you want to use oh-my-posh
 eval "$(oh-my-posh init zsh --config ~/.oh_my_posh_config.omp.json)"
+
+
+export PATH=/opt/riscv/bin:$PATH

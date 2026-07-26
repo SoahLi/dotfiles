@@ -28,7 +28,7 @@ return {
 
       -- Enable features per language: highlighting, folds, and indentation
     vim.api.nvim_create_autocmd('FileType', {
-      pattern = { 'python', 'lua', 'typescript', 'markdown', 'elixir', 'heex' },
+      pattern = { 'python', 'lua', 'typescript', 'markdown', 'elixir', 'heex', 'cpp' },
       callback = function()
         -- Enable syntax highlighting
         vim.treesitter.start()
